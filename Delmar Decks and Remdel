@@ -1,0 +1,2086 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Delmar Remodeling | Business System v2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="description" content="Residential Remodeling, Deck Building, Handyman Lead • Estimate • Project Management System">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <style>
+      :root {
+        --bg:#0f1115;--panel:#1c242d;--panel-alt:#222e3a;--border:#2e3945;
+        --accent:#1e90ff;--accent2:#4db3ff;--danger:#d9534f;--warn:#f0ad4e;--ok:#5cb85c;
+        --text:#f5f7fa;--muted:#98a3b1;--radius:12px;
+        --gradient:linear-gradient(135deg,#1e90ff,#2563eb);
+      }
+      *{box-sizing:border-box;}
+      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+        background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+      header{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;justify-content:space-between;
+        padding:.7rem 1.1rem;background:var(--panel);position:sticky;top:0;z-index:40;}
+      header h1{margin:0;font-size:1rem;font-weight:600;letter-spacing:.5px;
+        background:var(--gradient);-webkit-background-clip:text;color:transparent;display:flex;align-items:center;gap:.5rem;}
+      nav{display:flex;flex-wrap:wrap;gap:.35rem;}
+      nav button{background:var(--panel-alt);border:1px solid var(--border);padding:.55rem .85rem;
+        border-radius:7px;color:var(--text);cursor:pointer;font-size:.68rem;letter-spacing:.5px;
+        text-transform:uppercase;transition:.25s;font-weight:600;}
+      nav button.active,nav button:hover{background:var(--accent);border-color:var(--accent);
+        box-shadow:0 0 0 1px #1e90ff55,0 6px 18px -10px #1e90ffaa;}
+      #app{max-width:1700px;margin:0 auto;padding:1rem clamp(.6rem,2vw,1.4rem) 2.2rem;}
+      section.module{display:none;animation:fade .35s ease;}
+      section.module.active{display:block;}
+      @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+      .grid{display:grid;gap:1rem;}
+      .cols-4{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+      .two-col{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));}
+      .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+        padding:1rem 1rem 1.15rem;display:flex;flex-direction:column;gap:.55rem;
+        box-shadow:0 4px 8px -4px #0009,0 14px 38px -22px #000d;}
+      .panel.alt{background:var(--panel-alt);}
+      h3,h4{margin:.15rem 0 .4rem;font-size:.85rem;letter-spacing:.5px;text-transform:uppercase;font-weight:600;color:var(--accent2);}
+      .kpi-value{font-size:1.6rem;font-weight:600;line-height:1.1;}
+      .muted{color:var(--muted);font-size:.7rem;}
+      label{display:block;font-size:.6rem;text-transform:uppercase;font-weight:600;letter-spacing:.5px;color:var(--muted);margin:.4rem 0 .3rem;}
+      input,select,textarea{width:100%;background:#141a21;border:1px solid #2a3541;color:var(--text);
+        border-radius:7px;padding:.6rem .65rem;font:inherit;font-size:.75rem;resize:vertical;}
+      textarea{min-height:80px;}
+      input:focus,select:focus,textarea:focus{outline:2px solid #1e90ff80;border-color:#1e90ff;}
+      .btn-row{display:flex;flex-wrap:wrap;gap:.45rem;}
+      button.btn{background:var(--accent);border:none;color:#fff;padding:.6rem .9rem;
+        font:inherit;font-size:.68rem;letter-spacing:.5px;font-weight:700;text-transform:uppercase;
+        border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:.25s;}
+      button.btn.small{font-size:.6rem;padding:.45rem .65rem;}
+      button.btn.outline{background:transparent;border:1px solid var(--accent);color:var(--accent2);}
+      button.btn.alt{background:var(--panel-alt);color:var(--text);}
+      button.btn.danger{background:var(--danger);}
+      button.btn.warn{background:var(--warn);color:#222;}
+      button.btn.ghost{background:#202a34;}
+      button.btn:hover{filter:brightness(1.08);box-shadow:0 4px 14px -6px #1e90ffbb;transform:translateY(-1px);}
+      table{width:100%;border-collapse:collapse;font-size:.68rem;line-height:1.25;}
+      th,td{padding:.5rem .55rem;text-align:left;border-bottom:1px solid #2a3642;vertical-align:top;}
+      thead{background:#182028;position:sticky;top:0;z-index:5;}
+      tbody tr:hover{background:#1d2732;}
+      .scroll-x{overflow:auto;}
+      .tag{display:inline-block;padding:.25rem .55rem;font-size:.55rem;border-radius:40px;
+        font-weight:600;letter-spacing:.5px;text-transform:uppercase;background:#2b3744;color:var(--accent2);white-space:nowrap;}
+      .tag.type-deck{background:#2d3f55;color:#5dbbff;}
+      .tag.type-remodel{background:#42364b;color:#d68bff;}
+      .tag.type-handyman{background:#384b37;color:#6fe18f;}
+      .tag.status-lead{background:#3a4450;}
+      .tag.status-contacted{background:#253347;}
+      .tag.status-site{background:#433d24;}
+      .tag.status-estimate{background:#1f3d5c;}
+      .tag.status-follow{background:#244334;}
+      .tag.status-won{background:#324234;}
+      .tag.status-lost{background:#5c2a2a;}
+      .progress-bar{height:7px;background:#172028;border-radius:4px;overflow:hidden;position:relative;}
+      .progress-bar span{position:absolute;top:0;left:0;height:100%;background:var(--gradient);width:0%;}
+      .pill{background:#22303c;padding:.4rem .75rem;border-radius:30px;display:inline-flex;align-items:center;gap:.35rem;font-size:.6rem;}
+      .pill.done{background:#1f3324;}
+      .pill button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:.85rem;line-height:1;}
+      .formula{background:#182028;border:1px solid #25313d;padding:.6rem .75rem;border-radius:8px;font-size:.62rem;line-height:1.35;color:var(--accent2);overflow:auto;}
+      .search-bar{display:flex;flex-wrap:wrap;gap:.5rem;}
+      .search-bar input{flex:1;min-width:240px;}
+      .floating-add{position:fixed;bottom:1.2rem;right:1.2rem;z-index:90;}
+      .floating-add button{width:56px;height:56px;border-radius:50%;background:var(--gradient);border:none;
+        color:#fff;font-size:1.6rem;cursor:pointer;box-shadow:0 10px 28px -10px #1e90ffcc,0 0 0 4px #1e90ff30;
+        transition:.3s;}
+      .floating-add button:hover{transform:translateY(-4px) scale(1.05);}
+      dialog{border:none;background:#1b232c;color:var(--text);border-radius:22px;
+        width:min(980px,94vw);max-height:86vh;padding:1.3rem 1.4rem 1.65rem;box-shadow:0 24px 60px -18px #000d;overflow:auto;}
+      dialog::backdrop{background:#06090ebb;backdrop-filter:blur(4px);}
+      dialog h2{margin:0 0 .9rem;font-size:1.05rem;letter-spacing:.5px;}
+      .close-btn{position:absolute;top:.8rem;right:.8rem;width:40px;height:40px;border:none;background:#232f3a;
+        color:#fff;border-radius:12px;cursor:pointer;font-size:1rem;}
+      .close-btn:hover{background:#2d3a47;}
+      .danger-box{border:1px solid #5e2727;background:#331717;color:#ff9090;padding:.55rem .75rem;border-radius:9px;font-size:.6rem;}
+      .warn-box{border:1px solid var(--warn);background:#31250d;color:#ffcf7f;padding:.55rem .75rem;border-radius:9px;font-size:.6rem;}
+      .success-box{border:1px solid #2e5740;background:#143021;color:#7ae59c;padding:.55rem .75rem;border-radius:9px;font-size:.6rem;}
+      .chart{width:100%;height:150px;position:relative;}
+      .chart canvas{width:100%;height:100%;}
+      footer{margin:4rem 0 2rem;text-align:center;font-size:.6rem;color:var(--muted);}
+      .export-menu{position:relative;}
+      .export-dropdown{position:absolute;top:110%;right:0;background:#1d2732;border:1px solid #2d3743;
+        border-radius:10px;padding:.5rem;display:none;flex-direction:column;min-width:170px;box-shadow:0 18px 40px -16px #000d;}
+      .export-dropdown button{background:#243240;border:none;color:#fff;text-align:left;padding:.45rem .6rem;
+        border-radius:6px;font-size:.6rem;cursor:pointer;}
+      .export-dropdown button:hover{background:#2d3f50;}
+      .export-menu.open .export-dropdown{display:flex;}
+      .inline-note{font-size:.6rem;color:var(--muted);margin-top:.3rem;}
+      .est-mat-grid{display:grid;grid-template-columns:2fr .6fr .8fr auto;gap:.4rem;margin-top:.4rem;}
+      .link-btn{background:none;border:none;color:var(--accent2);cursor:pointer;font-size:.6rem;padding:0;}
+      .due-soon{color:var(--warn);font-weight:600;}
+      .overdue{color:var(--danger);font-weight:700;}
+      @media (max-width:860px){
+        header{flex-direction:column;align-items:stretch;}
+        nav{width:100%;}
+        .floating-add button{width:52px;height:52px;font-size:1.4rem;}
+      }
+    </style>
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-/F2dOU9Hh9tq8qxX3KQ0C+z6hcfdrk6GrCVuVi//3yQt+g1k5zD1+f7N4EkXwE8p8nH4JYp1U3gCBX1Qyi3+qA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+    <header>
+      <h1><span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#1a2734;">🏗️</span>Delmar Remodeling System v2</h1>
+      <nav id="nav"></nav>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <div class="export-menu" id="exportMenu">
+          <button class="btn small outline" onclick="toggleExportMenu()">Export ▾</button>
+          <div class="export-dropdown" id="exportDropdown">
+            <button onclick="exportJSON()">Data JSON</button>
+            <button onclick="exportTableCSV('leadTable','leads.csv')">Leads CSV</button>
+            <button onclick="exportTableCSV('estimateTable','estimates.csv')">Estimates CSV</button>
+            <button onclick="exportTableCSV('projectTable','projects.csv')">Projects CSV</button>
+            <button onclick="exportTableCSV('customerTable','customers.csv')">Customers CSV</button>
+            <button onclick="exportTableCSV('invoiceTable','invoices.csv')">Invoices CSV</button>
+            <button onclick="exportTableCSV('expenseTable','expenses.csv')">Expenses CSV</button>
+            <button onclick="exportEstimatePDF()">Selected Estimate PDF</button>
+          </div>
+        </div>
+        <label class="btn small alt" style="cursor:pointer;">
+          Import
+          <input id="importFile" type="file" accept="application/json" style="display:none;">
+        </label>
+        <button class="btn small danger" id="resetDataBtn">Reset</button>
+      </div>
+    </header>
+
+    <main id="app">
+      <!-- DASHBOARD -->
+      <section class="module active" id="dashboard">
+        <div class="grid cols-4">
+          <div class="panel">
+            <h3>Leads (MTD)</h3>
+            <div class="kpi-value" id="kpiLeads">0</div>
+            <div class="muted">Conversion <span id="kpiLeadConversion">0%</span></div>
+          </div>
+          <div class="panel">
+            <h3>Estimates Sent</h3>
+            <div class="kpi-value" id="kpiEstimates">0</div>
+            <div class="muted">Pending Follow-ups <span id="kpiFollowUps">0</span></div>
+          </div>
+          <div class="panel">
+            <h3>Active Projects</h3>
+            <div class="kpi-value" id="kpiActiveProjects">0</div>
+            <div class="muted"><span id="kpiInProgressPct">0%</span> In Progress</div>
+          </div>
+          <div class="panel">
+            <h3>Revenue (Paid)</h3>
+            <div class="kpi-value" id="kpiRevenue">$0</div>
+            <div class="muted">Margin Avg <span id="kpiMarginAvg">0%</span></div>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:1.2rem;">
+          <div class="panel">
+            <h3>Pipeline Flow</h3>
+            <div class="chart"><canvas id="pipelineChart"></canvas></div>
+            <div class="muted">Leads → Estimates → Projects → Completed</div>
+          </div>
+            <div class="panel">
+              <h3>Upcoming Follow-Ups</h3>
+              <ul id="followList" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem;font-size:.65rem;"></ul>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-top:1.1rem;">
+          <h3>Recent Activity</h3>
+          <ul id="activityFeed" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem;font-size:.65rem;"></ul>
+        </div>
+
+        <div class="panel alt">
+          <h3>Key Formulas</h3>
+          <p class="formula">
+            Estimate Material Cost \[Material\ Cost = \sum(qty_i \times unitCost_i)\]<br>
+            Labor Cost \[Labor\ Cost = Crew\ Size \times Hours/Day \times Days \times Labor\ Rate\]<br>
+            Overhead \[Overhead = (Material + Labor) \times \frac{Overhead\%}{100}\]<br>
+            Subtotal \[Subtotal = Material + Labor + Overhead\]<br>
+            Price \[Price = Subtotal \times \left(1 + \frac{Markup\%}{100}\right)\]<br>
+            Profit \[Profit = Price - Subtotal\]<br>
+            Margin \[Margin\% = \frac{Profit}{Price} \times 100\%\]
+          </p>
+          <p class="muted">These drive the Estimate and Project financial panels.</p>
+        </div>
+      </section>
+
+      <!-- LEADS -->
+      <section class="module" id="leads">
+        <div class="panel">
+          <h3>Lead Management</h3>
+          <div class="search-bar">
+            <input id="leadSearch" placeholder="Search leads (name, city, source, status, type)...">
+            <select id="leadFilterStatus">
+              <option value="">All Status</option>
+              <option value="Lead">Lead</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Site Visit">Site Visit</option>
+              <option value="Estimate Sent">Estimate Sent</option>
+              <option value="Follow-Up">Follow-Up</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+            <select id="leadFilterType">
+              <option value="">All Types</option>
+              <option>Deck</option>
+              <option>Remodel</option>
+              <option>Handyman</option>
+              <option>Other</option>
+            </select>
+            <button class="btn small" id="addLeadBtn">+ Lead</button>
+          </div>
+          <div class="scroll-x" style="margin-top:.75rem;">
+            <table id="leadTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Source</th>
+                  <th>Status</th>
+                  <th>Budget</th>
+                  <th>Next Action</th>
+                  <th>Created</th>
+                  <th width="1%">Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="muted" id="leadCount"></div>
+        </div>
+        <div class="panel alt">
+          <h3>Lead Status Flow</h3>
+          <ol style="font-size:.65rem;line-height:1.35;padding-left:1.05rem;margin:0;">
+            <li>Lead → initial inquiry logged</li>
+            <li>Contacted → first touch made</li>
+            <li>Site Visit → on-site assessment scheduled/completed</li>
+            <li>Estimate Sent → formal estimate delivered</li>
+            <li>Follow-Up → awaiting decision, reminders</li>
+            <li>Won → convert to Project / create Estimate record if not already</li>
+            <li>Lost → track reason for improvement</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ESTIMATES -->
+      <section class="module" id="estimates">
+        <div class="panel">
+          <h3>Estimates</h3>
+          <div class="search-bar">
+            <input id="estimateSearch" placeholder="Search estimates (title, lead, project)...">
+            <select id="estimateFilterStatus">
+              <option value="">All Status</option>
+              <option value="Draft">Draft</option>
+              <option value="Sent">Sent</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+            <button class="btn small" id="addEstimateBtn">+ Estimate</button>
+          </div>
+          <div class="scroll-x" style="margin-top:.75rem;">
+            <table id="estimateTable">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Linked To</th>
+                  <th>Status</th>
+                  <th>Material</th>
+                  <th>Labor</th>
+                  <th>Total</th>
+                  <th>Margin%</th>
+                  <th width="1%">Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="muted" id="estimateCount"></div>
+        </div>
+        <div class="panel alt">
+          <h3>Estimation Form Guide</h3>
+          <p class="formula">
+            Provide line items for materials with qty & unit cost, define crew size + schedule for labor, adjust overhead & markup. System calculates price & margin instantly.
+          </p>
+          <p class="muted">Use "Save & PDF" inside the Estimate modal for client-ready output.</p>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS -->
+      <section class="module" id="customers">
+        <div class="panel">
+          <h3>Customers</h3>
+          <div class="search-bar">
+            <input id="customerSearch" placeholder="Search customers...">
+            <select id="customerSort">
+              <option value="name">Sort: Name</option>
+              <option value="projects">Sort: Projects</option>
+              <option value="recent">Sort: Recent</option>
+            </select>
+            <button class="btn small" id="addCustomerBtn">+ Customer</button>
+          </div>
+          <div class="scroll-x" style="margin-top:.75rem;">
+            <table id="customerTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th>Projects</th>
+                  <th>City</th>
+                  <th>Notes</th>
+                  <th width="1%">Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="muted" id="customerCount"></div>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="module" id="projects">
+        <div class="panel">
+          <h3>Projects</h3>
+          <div class="search-bar">
+            <input id="projectSearch" placeholder="Search projects...">
+            <select id="projectFilterType">
+              <option value="">All Types</option>
+              <option>Deck</option>
+              <option>Remodel</option>
+              <option>Handyman</option>
+            </select>
+            <select id="projectFilterStatus">
+              <option value="">All Status</option>
+              <option>Lead</option>
+              <option>Estimate</option>
+              <option>Approved</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select>
+            <button class="btn small" id="addProjectBtn">+ Project</button>
+          </div>
+          <div class="scroll-x" style="margin-top:.75rem;">
+            <table id="projectTable">
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Type</th>
+                  <th>Customer</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Est vs Cost</th>
+                  <th>Margin</th>
+                  <th width="1%">Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="muted" id="projectCount"></div>
+        </div>
+        <div class="panel alt">
+          <h3>Cost & Margin Logic</h3>
+          <p class="formula">
+            Base\ Cost = Material + Labor + Overhead<br>
+            Price = Base\ Cost × (1 + Markup\%)<br>
+            Profit = Price - Base\ Cost<br>
+            Margin\% = \[\frac{Profit}{Price} \times 100\%\]
+          </p>
+        </div>
+      </section>
+
+      <!-- FINANCIAL -->
+      <section class="module" id="financial">
+        <div class="two-col">
+          <div class="panel">
+            <h3>Invoices</h3>
+            <div class="btn-row">
+              <button class="btn small" id="addInvoiceBtn">+ Invoice</button>
+              <select id="invoiceFilterStatus">
+                <option value="">All</option>
+                <option>Draft</option>
+                <option>Sent</option>
+                <option>Paid</option>
+                <option>Overdue</option>
+              </select>
+            </div>
+            <div class="scroll-x" style="margin-top:.75rem;">
+              <table id="invoiceTable">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Project</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th width="1%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="muted" id="invoiceSummary"></div>
+          </div>
+          <div class="panel">
+            <h3>Expenses</h3>
+            <div class="btn-row">
+              <button class="btn small" id="addExpenseBtn">+ Expense</button>
+              <select id="expenseFilterCat">
+                <option value="">All Categories</option>
+                <option>Materials</option>
+                <option>Labor</option>
+                <option>Tools</option>
+                <option>Permits</option>
+                <option>Marketing</option>
+                <option>General</option>
+              </select>
+            </div>
+            <div class="scroll-x" style="margin-top:.75rem;">
+              <table id="expenseTable">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Project</th>
+                    <th>Amount</th>
+                    <th width="1%">Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="muted" id="expenseSummary"></div>
+          </div>
+        </div>
+        <div class="panel alt" style="margin-top:1rem;">
+          <h3>Cash Flow (6 Mo)</h3>
+          <div class="chart"><canvas id="cashChart"></canvas></div>
+          <div class="muted">Paid Invoices vs All Expenses (by month).</div>
+        </div>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="module" id="inventory">
+        <div class="panel">
+          <h3>Inventory</h3>
+          <div class="search-bar">
+            <input id="inventorySearch" placeholder="Search inventory...">
+            <select id="inventoryFilterType">
+              <option value="">All Types</option>
+              <option>Material</option>
+              <option>Tool</option>
+              <option>Supply</option>
+            </select>
+            <button class="btn small" id="addInventoryBtn">+ Item</button>
+          </div>
+          <div class="scroll-x" style="margin-top:.75rem;">
+            <table id="inventoryTable">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Type</th>
+                  <th>Stock</th>
+                  <th>Unit Cost</th>
+                  <th>Reorder</th>
+                  <th>Lead (d)</th>
+                  <th>Daily Use</th>
+                  <th>Supplier</th>
+                  <th width="1%">Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div class="muted" id="inventoryTotals"></div>
+          <div id="inventoryAlerts" style="margin-top:.7rem;"></div>
+        </div>
+        <div class="panel alt">
+          <h3>Reorder Formula</h3>
+          <p class="formula">Reorder\ Point = (Avg\ Daily\ Use × Lead\ Time\ Days) + Safety\ Stock</p>
+        </div>
+      </section>
+
+      <!-- SCHEDULE -->
+      <section class="module" id="schedule">
+        <div class="panel">
+          <h3>Schedule / Appointments</h3>
+            <div class="btn-row">
+              <button class="btn small" id="addEventBtn">+ Event</button>
+              <select id="scheduleView">
+                <option value="list">List</option>
+                <option value="today">Today</option>
+                <option value="week">7-Day</option>
+              </select>
+            </div>
+          <div id="scheduleContainer" style="margin-top:.75rem;"></div>
+        </div>
+        <div class="panel alt">
+          <h3>Scheduling Guidance</h3>
+          <ul style="font-size:.65rem;line-height:1.35;margin:0;padding-left:1rem;">
+            <li>Stack deck footings early in week for inspections.</li>
+            <li>Batch handyman calls by neighborhood.</li>
+            <li>Leave weather buffer for outdoor phases.</li>
+            <li>Block admin time for estimates & follow-ups.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="module" id="settings">
+        <div class="panel">
+          <h3>Settings</h3>
+          <div class="two-col">
+            <div>
+              <label>Default Labor Rate ($/hr)</label>
+              <input id="settingLaborRate" type="number" min="0" step="1">
+              <label>Default Overhead %</label>
+              <input id="settingOverheadPct" type="number" min="0" step=".1">
+              <label>Default Markup %</label>
+              <input id="settingMarkupPct" type="number" min="0" step=".1">
+              <button class="btn small" id="saveSettingsBtn" style="margin-top:.7rem;">Save Settings</button>
+            </div>
+            <div>
+              <div class="success-box">
+                <strong>Local Storage</strong><br>All data persists locally. Export JSON for backup.
+              </div>
+              <div class="warn-box" style="margin-top:.7rem;">
+                Reset wipes EVERYTHING. Export first.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel alt">
+          <h3>Schema Snapshot</h3>
+          <pre id="schemaView" style="font-size:.6rem;white-space:pre-wrap;max-height:320px;overflow:auto;background:#141b22;padding:.75rem;border:1px solid #25313d;border-radius:8px;"></pre>
+        </div>
+      </section>
+    </main>
+
+    <div class="floating-add">
+      <button id="quickAddBtn" title="Quick Add">+</button>
+    </div>
+
+    <dialog id="modalRoot"></dialog>
+
+    <footer>
+      Delmar Remodeling • Lead • Estimate • Project System • © <span id="year"></span> Delmar Maryland 21875
+    </footer>
+
+    <script>
+      // ======================== STATE & STORAGE ========================
+      const STORAGE_KEY='delmar_remodeling_system_v2';
+      function iso(){return new Date().toISOString();}
+      function genId(){return 'id_'+Math.random().toString(36).slice(2,11);}
+      function today(){return new Date().toISOString().slice(0,10);}
+      function daysFromNow(x){const d=new Date();d.setDate(d.getDate()+x);return d.toISOString().slice(0,10);}
+
+      const DEFAULT_DATA = {
+        meta:{version:'2.0.0', created:iso()},
+        settings:{laborRate:65, overheadPct:15, markupPct:25},
+        activity:[],
+        leads:[
+          {
+            id:genId(), name:'Sarah Miller', phone:'410-555-2277', email:'sarah@example.com',
+            city:'Delmar', type:'Deck', source:'Referral', status:'Lead',
+            budgetMin:12000, budgetMax:17000,
+            nextActionDate:daysFromNow(3), notes:'Wants low-maintenance composite.',
+            created:iso()
+          }
+        ],
+        estimates:[],
+        customers:[
+          {id:genId(), name:'John Carter', phone:'410-555-1122', email:'john.carter@example.com', city:'Delmar', notes:'Composite deck interest', created:iso(), projects:[]}
+        ],
+        projects:[],
+        invoices:[],
+        expenses:[],
+        inventory:[
+          {id:genId(), name:'Composite Deck Board (12ft)', type:'Material', stock:110, unitCost:34.75, reorderPoint:60, leadTimeDays:7, dailyUse:10, safetyStock:15, supplier:'Regional Lumber'},
+          {id:genId(), name:'PT 4x4 (10ft)', type:'Material', stock:40, unitCost:21.10, reorderPoint:25, leadTimeDays:5, dailyUse:4, safetyStock:8, supplier:'Regional Lumber'},
+          {id:genId(), name:'Galv Screws Bucket', type:'Supply', stock:8, unitCost:59, reorderPoint:5, leadTimeDays:4, dailyUse:.5, safetyStock:1, supplier:'Fastener World'}
+        ],
+        schedule:[
+          {id:genId(), title:'Site Visit - Sarah Miller', date:daysFromNow(1), time:'09:00', duration:60, type:'Site Visit', notes:'Deck layout'}
+        ]
+      };
+
+      let state = loadState();
+      function loadState(){
+        try{
+          const raw=localStorage.getItem(STORAGE_KEY);
+          if(raw) return JSON.parse(raw);
+          saveState(DEFAULT_DATA);
+          return structuredClone(DEFAULT_DATA);
+        }catch(e){
+          console.error(e);return structuredClone(DEFAULT_DATA);
+        }
+      }
+      function saveState(s=state){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+        updateSchemaView();
+      }
+      function logActivity(text){
+        state.activity.unshift({id:genId(), text, ts:iso()});
+        state.activity = state.activity.slice(0,180);
+        saveState();
+        renderActivity();
+      }
+
+      // ======================== NAVIGATION ========================
+      const modules=[
+        {id:'dashboard',label:'Dashboard'},
+        {id:'leads',label:'Leads'},
+        {id:'estimates',label:'Estimates'},
+        {id:'customers',label:'Customers'},
+        {id:'projects',label:'Projects'},
+        {id:'financial',label:'Financial'},
+        {id:'inventory',label:'Inventory'},
+        {id:'schedule',label:'Schedule'},
+        {id:'settings',label:'Settings'}
+      ];
+      const navEl=document.getElementById('nav');
+      modules.forEach(m=>{
+        const b=document.createElement('button');
+        b.textContent=m.label;
+        b.onclick=()=>activateModule(m.id,b);
+        if(m.id==='dashboard') b.classList.add('active');
+        navEl.append(b);
+      });
+      function activateModule(id,btn){
+        document.querySelectorAll('section.module').forEach(s=>s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        if(id==='dashboard') renderDashboard();
+      }
+
+      // ======================== HELPERS ========================
+      function money(v){return '$'+(Number(v)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+      function escapeHTML(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+      function escapeAttr(s){return escapeHTML(s).replace(/"/g,'&quot;');}
+      function findLeadName(id){return state.leads.find(l=>l.id===id)?.name||null;}
+      function findProjectName(id){return state.projects.find(p=>p.id===id)?.name||null;}
+      function findCustomerName(id){return state.customers.find(c=>c.id===id)?.name||null;}
+      function estimateFinancials(est){
+        const material = est.materials.reduce((a,b)=>a+(b.qty*b.unitCost),0);
+        const labor = (est.crewSize||1)*(est.hoursPerDay||0)*(est.days||0)*(est.laborRate||state.settings.laborRate);
+        const overhead = (material+labor)*(est.overheadPct/100);
+        const subtotal = material+labor+overhead;
+        const price = subtotal*(1+ (est.markupPct/100));
+        const profit = price - subtotal;
+        const margin = price? (profit/price)*100 : 0;
+        return {material,labor,overhead,subtotal,price,profit,margin};
+      }
+
+      // ======================== DASHBOARD ========================
+      function renderDashboard(){
+        const month = new Date().toISOString().slice(0,7);
+        const leadsMonth = state.leads.filter(l=>l.created.startsWith(month));
+        document.getElementById('kpiLeads').textContent = leadsMonth.length;
+        const won = state.leads.filter(l=>l.status==='Won').length;
+        document.getElementById('kpiLeadConversion').textContent = state.leads.length? ((won/state.leads.length)*100).toFixed(1)+'%':'0%';
+
+        const estimatesSent = state.estimates.filter(e=>e.status==='Sent').length;
+        document.getElementById('kpiEstimates').textContent = estimatesSent;
+
+        const followDue = state.leads.filter(l=>{
+          if(!l.nextActionDate) return false;
+          const d=new Date(l.nextActionDate);
+            const todayDate=new Date();
+          return d<=todayDate && !['Won','Lost'].includes(l.status);
+        }).length;
+        document.getElementById('kpiFollowUps').textContent = followDue;
+
+        const active = state.projects.filter(p=>['Approved','In Progress'].includes(p.status));
+        document.getElementById('kpiActiveProjects').textContent = active.length;
+        const inProg = state.projects.filter(p=>p.status==='In Progress').length;
+        document.getElementById('kpiInProgressPct').textContent = active.length? ((inProg/active.length)*100).toFixed(0)+'%':'0%';
+
+        const revenuePaid = state.invoices.filter(i=>i.status==='Paid').reduce((a,b)=>a+(b.total||0),0);
+        document.getElementById('kpiRevenue').textContent = money(revenuePaid);
+
+        const margins = state.estimates.filter(e=>e.status==='Accepted').map(e=>{
+          const f=estimateFinancials(e);
+          return f.margin;
+        });
+        const avg = margins.length? (margins.reduce((a,b)=>a+b,0)/margins.length):0;
+        document.getElementById('kpiMarginAvg').textContent = avg.toFixed(1)+'%';
+
+        renderPipelineChart();
+        renderFollowUpsList();
+        renderActivity();
+      }
+      function renderPipelineChart(){
+        const stages=['Leads','Estimates','Projects','Completed'];
+        const counts=[
+          state.leads.length,
+          state.estimates.length,
+          state.projects.length,
+          state.projects.filter(p=>p.status==='Completed').length
+        ];
+        drawBarChart('pipelineChart', stages, counts, {colors:'#1e90ff'});
+      }
+      function renderFollowUpsList(){
+        const ul=document.getElementById('followList');
+        const todayStr=today();
+        const items = state.leads
+          .filter(l=>l.nextActionDate && !['Won','Lost'].includes(l.status))
+          .sort((a,b)=> a.nextActionDate.localeCompare(b.nextActionDate))
+          .slice(0,12)
+          .map(l=>{
+            const cls = l.nextActionDate < todayStr ? 'overdue' : (l.nextActionDate===todayStr?'due-soon':'');
+            return `<li>
+              <strong>${escapeHTML(l.name)}</strong> <span class="${cls}">${l.nextActionDate||''}</span><br>
+              <span class="muted">${escapeHTML(l.status)}</span>
+              <button class="link-btn" onclick="editLead('${l.id}')">View</button>
+            </li>`;
+          }).join('');
+        ul.innerHTML = items || '<li class="muted">No follow-ups</li>';
+      }
+      function renderActivity(){
+        const feed=document.getElementById('activityFeed');
+        feed.innerHTML = state.activity.slice(0,18).map(a=>{
+          const d=new Date(a.ts);
+          return `<li><span class="muted">${d.toLocaleString()}</span><br>${escapeHTML(a.text)}</li>`;
+        }).join('');
+      }
+
+      // ======================== LEADS ========================
+      function renderLeads(){
+        const term=document.getElementById('leadSearch').value.toLowerCase().trim();
+        const st=document.getElementById('leadFilterStatus').value;
+        const tp=document.getElementById('leadFilterType').value;
+        let list=[...state.leads];
+        if(term){
+          list=list.filter(l=>
+            (l.name||'').toLowerCase().includes(term)||
+            (l.city||'').toLowerCase().includes(term)||
+            (l.source||'').toLowerCase().includes(term)||
+            (l.status||'').toLowerCase().includes(term)||
+            (l.type||'').toLowerCase().includes(term)
+          );
+        }
+        if(st) list=list.filter(l=>l.status===st);
+        if(tp) list=list.filter(l=>l.type===tp);
+        list.sort((a,b)=> new Date(b.created)-new Date(a.created));
+        document.querySelector('#leadTable tbody').innerHTML = list.map(l=>{
+          return `<tr>
+            <td><strong>${escapeHTML(l.name)}</strong><br><span class="muted">${escapeHTML(l.city||'')}</span></td>
+            <td>${escapeHTML(l.type||'')}</td>
+            <td>${escapeHTML(l.source||'')}</td>
+            <td>${leadStatusBadge(l.status)}</td>
+            <td>${l.budgetMin?money(l.budgetMin):'—'}<br><span class="muted">${l.budgetMax?money(l.budgetMax):''}</span></td>
+            <td>${l.nextActionDate? formatActionDate(l.nextActionDate):'—'}</td>
+            <td>${(l.created||'').slice(0,10)}</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="editLead('${l.id}')">View</button>
+                <button class="btn small" onclick="createEstimateFromLead('${l.id}')">Est</button>
+                <button class="btn small warn" onclick="convertLeadToProject('${l.id}')">Proj</button>
+                <button class="btn small danger" onclick="deleteLead('${l.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        document.getElementById('leadCount').textContent = list.length+' / '+state.leads.length+' leads';
+      }
+      function formatActionDate(d){
+        const todayStr=today();
+        if(d<todayStr) return `<span class="overdue">${d}</span>`;
+        if(d===todayStr) return `<span class="due-soon">${d}</span>`;
+        return d;
+      }
+      function leadStatusBadge(s){
+        const map={
+          'Lead':'status-lead','Contacted':'status-contacted','Site Visit':'status-site',
+          'Estimate Sent':'status-estimate','Follow-Up':'status-follow','Won':'status-won','Lost':'status-lost'
+        };
+        return `<span class="tag ${map[s]||''}">${s}</span>`;
+      }
+      function leadForm(l={}){
+        return `
+          <form onsubmit="saveLead(event,'${l.id||''}')">
+            <div class="two-col">
+              <div>
+                <label>Name</label>
+                <input name="name" required value="${escapeAttr(l.name||'')}">
+              </div>
+              <div>
+                <label>Type</label>
+                <select name="type">
+                  ${['Deck','Remodel','Handyman','Other'].map(t=> `<option ${t===(l.type||'Deck')?'selected':''}>${t}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Source</label>
+                <select name="source">
+                  ${['Referral','Web','Social','Yard Sign','Repeat','Other'].map(t=> `<option ${t===(l.source||'Referral')?'selected':''}>${t}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Status</label>
+                <select name="status">
+                  ${['Lead','Contacted','Site Visit','Estimate Sent','Follow-Up','Won','Lost'].map(s=> `<option ${s===(l.status||'Lead')?'selected':''}>${s}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Budget Min</label>
+                <input name="budgetMin" type="number" step="1" value="${l.budgetMin||''}">
+              </div>
+              <div>
+                <label>Budget Max</label>
+                <input name="budgetMax" type="number" step="1" value="${l.budgetMax||''}">
+              </div>
+              <div>
+                <label>City</label>
+                <input name="city" value="${escapeAttr(l.city||'')}">
+              </div>
+              <div>
+                <label>Next Action Date</label>
+                <input type="date" name="nextActionDate" value="${l.nextActionDate||''}">
+              </div>
+            </div>
+            <div class="two-col">
+              <div>
+                <label>Phone</label>
+                <input name="phone" value="${escapeAttr(l.phone||'')}">
+              </div>
+              <div>
+                <label>Email</label>
+                <input type="email" name="email" value="${escapeAttr(l.email||'')}">
+              </div>
+            </div>
+            <label>Notes / Scope</label>
+            <textarea name="notes">${escapeHTML(l.notes||'')}</textarea>
+            <div style="margin-top:.8rem;" class="btn-row">
+              <button class="btn">Save Lead</button>
+              ${l.id? `<button type="button" class="btn warn" onclick="convertLeadToProject('${l.id}')">Convert → Project</button>`:''}
+              ${l.id? `<button type="button" class="btn" onclick="createEstimateFromLead('${l.id}')">Create Estimate</button>`:''}
+            </div>
+          </form>
+        `;
+      }
+      function addLeadModal(){openModal('New Lead', leadForm());}
+      function editLead(id){
+        const l=state.leads.find(x=>x.id===id);
+        openModal('Lead Detail', leadForm(l));
+      }
+      window.saveLead=function(e,id){
+        e.preventDefault();
+        const obj=Object.fromEntries(new FormData(e.target).entries());
+        obj.budgetMin = Number(obj.budgetMin)||null;
+        obj.budgetMax = Number(obj.budgetMax)||null;
+        if(id){
+          Object.assign(state.leads.find(l=>l.id===id), obj);
+          logActivity('Updated lead '+obj.name);
+        } else {
+          state.leads.push({id:genId(), created:iso(), ...obj});
+          logActivity('Created lead '+obj.name);
+        }
+        saveState();
+        closeModal();
+        renderLeads();
+        renderDashboard();
+      };
+      window.deleteLead=function(id){
+        if(!confirm('Delete lead?')) return;
+        state.leads=state.leads.filter(l=>l.id!==id);
+        saveState();renderLeads();logActivity('Deleted lead');
+      };
+      window.convertLeadToProject=function(id){
+        const l=state.leads.find(x=>x.id===id);
+        if(!l) return;
+        if(!confirm('Convert this lead to a Project?')) return;
+        // Create customer if doesn't exist (match by email+phone+name)
+        let cust = state.customers.find(c=> c.name===l.name && c.phone===l.phone);
+        if(!cust){
+          cust = {id:genId(), name:l.name, phone:l.phone, email:l.email, city:l.city, notes:'Auto from Lead', created:iso(), projects:[]};
+          state.customers.push(cust);
+        }
+        const proj = {
+          id:genId(),
+          name: l.name + ' Project',
+            customerId: cust.id,
+          type: l.type==='Other'?'Remodel': (l.type||'Deck'),
+          status:'Approved',
+          description: l.notes||'Converted from lead',
+          tasks:[],
+          materials:[],
+          laborHours:0,
+          overheadPct: state.settings.overheadPct,
+          markupPct: state.settings.markupPct,
+          notes:'',
+          created: iso(),
+          updated: iso()
+        };
+        state.projects.push(proj);
+        cust.projects.push(proj.id);
+        l.status='Won';
+        saveState();
+        logActivity('Converted lead to project: '+proj.name);
+        renderLeads();renderProjects();renderDashboard();
+        alert('Project created.');
+      };
+
+      window.createEstimateFromLead=function(id){
+        const l=state.leads.find(x=>x.id===id);
+        if(!l) return;
+        openEstimateModal({
+          title: l.name + ' Estimate',
+          leadId: l.id,
+          status:'Draft'
+        });
+      };
+
+      // ======================== ESTIMATES ========================
+      function renderEstimates(){
+        const term=document.getElementById('estimateSearch').value.toLowerCase().trim();
+        const filt=document.getElementById('estimateFilterStatus').value;
+        let list=[...state.estimates];
+        if(term){
+          list=list.filter(e=>
+            (e.title||'').toLowerCase().includes(term)||
+            (findLeadName(e.leadId)||'').toLowerCase().includes(term)||
+            (findProjectName(e.projectId)||'').toLowerCase().includes(term)
+          );
+        }
+        if(filt) list=list.filter(e=>e.status===filt);
+        list.sort((a,b)=> new Date(b.created)-new Date(a.created));
+        document.querySelector('#estimateTable tbody').innerHTML = list.map(e=>{
+          const f=estimateFinancials(e);
+          return `<tr class="${e.id===selectedEstimateId?'selected-row':''}">
+            <td><strong>${escapeHTML(e.title)}</strong></td>
+            <td>
+              ${(e.leadId? `<span class="muted">Lead:</span> ${escapeHTML(findLeadName(e.leadId)||'')}`:'')}
+              ${(e.projectId? `<br><span class="muted">Proj:</span> ${escapeHTML(findProjectName(e.projectId)||'')}`:'')}
+            </td>
+            <td>${estimateStatusBadge(e.status)}</td>
+            <td>${money(f.material)}</td>
+            <td>${money(f.labor)}</td>
+            <td>${money(f.price)}</td>
+            <td>${f.margin.toFixed(1)}%</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="openEstimateModalById('${e.id}')">View</button>
+                <button class="btn small warn" onclick="acceptEstimateToProject('${e.id}')">↦ Proj</button>
+                <button class="btn small danger" onclick="deleteEstimate('${e.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        document.getElementById('estimateCount').textContent = list.length+' / '+state.estimates.length+' estimates';
+      }
+      function estimateStatusBadge(s){
+        const map={Draft:'#3a4450',Sent:'#1f3d5c',Accepted:'#324234',Rejected:'#5c2a2a'};
+        return `<span class="tag" style="background:${map[s]||'#2b3744'};">${s}</span>`;
+      }
+      let selectedEstimateId=null;
+      function openEstimateModalById(id){
+        const est=state.estimates.find(e=>e.id===id);
+        openEstimateModal(est);
+      }
+      function openEstimateModal(est={}){
+        if(!est.id){
+          est = {
+            id:genId(),
+            title:est.title||'New Estimate',
+            leadId:est.leadId||'',
+            projectId:'',
+            status:est.status||'Draft',
+            crewSize:2,
+            hoursPerDay:6,
+            days:1,
+            laborRate:state.settings.laborRate,
+            overheadPct:state.settings.overheadPct,
+            markupPct:state.settings.markupPct,
+            materials:[],
+            notes:'',
+            created:iso(),
+            updated:iso()
+          };
+          state.estimates.push(est);
+          saveState();
+          logActivity('Created estimate '+est.title);
+        }
+        selectedEstimateId=est.id;
+        openModal('Estimate Builder', estimateForm(est));
+        updateEstimateCalc(est.id);
+        renderEstimates();
+      }
+      function estimateForm(e){
+        return `
+          <form onsubmit="saveEstimateMeta(event,'${e.id}')">
+            <div class="two-col">
+              <div>
+                <label>Title</label>
+                <input name="title" required value="${escapeAttr(e.title)}">
+              </div>
+              <div>
+                <label>Status</label>
+                <select name="status">
+                  ${['Draft','Sent','Accepted','Rejected'].map(s=> `<option ${s===e.status?'selected':''}>${s}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Lead Link</label>
+                <select name="leadId">
+                  <option value="">— None —</option>
+                  ${state.leads.map(l=> `<option value="${l.id}" ${l.id===e.leadId?'selected':''}>${escapeHTML(l.name)}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Project Link</label>
+                <select name="projectId">
+                  <option value="">— None —</option>
+                  ${state.projects.map(p=> `<option value="${p.id}" ${p.id===e.projectId?'selected':''}>${escapeHTML(p.name)}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+
+            <h4>Labor & Rates</h4>
+            <div class="two-col">
+              <div>
+                <label>Crew Size</label>
+                <input name="crewSize" type="number" step="1" value="${e.crewSize}">
+              </div>
+              <div>
+                <label>Hours / Day</label>
+                <input name="hoursPerDay" type="number" step=".1" value="${e.hoursPerDay}">
+              </div>
+              <div>
+                <label>Days</label>
+                <input name="days" type="number" step=".1" value="${e.days}">
+              </div>
+              <div>
+                <label>Labor Rate</label>
+                <input name="laborRate" type="number" step="1" value="${e.laborRate}">
+              </div>
+              <div>
+                <label>Overhead %</label>
+                <input name="overheadPct" type="number" step=".1" value="${e.overheadPct}">
+              </div>
+              <div>
+                <label>Markup %</label>
+                <input name="markupPct" type="number" step=".1" value="${e.markupPct}">
+              </div>
+            </div>
+
+            <h4>Materials</h4>
+            <div id="matList">${e.materials.map(m=>materialLine(e.id,m)).join('')}</div>
+            <div class="est-mat-grid" style="margin-top:.5rem;">
+              <input id="newMatName" placeholder="Name">
+              <input id="newMatQty" type="number" step=".01" placeholder="Qty">
+              <input id="newMatCost" type="number" step=".01" placeholder="Unit $">
+              <button type="button" class="btn small" onclick="addEstimateMaterial('${e.id}')">Add</button>
+            </div>
+
+            <h4>Notes</h4>
+            <textarea name="notes">${escapeHTML(e.notes||'')}</textarea>
+
+            <h4>Totals</h4>
+            <div id="estimateTotals" class="formula" style="font-size:.62rem;"></div>
+
+            <div class="btn-row" style="margin-top:.8rem;">
+              <button class="btn">Save</button>
+              <button type="button" class="btn outline" onclick="updateEstimateCalc('${e.id}')">Recalc</button>
+              <button type="button" class="btn" onclick="downloadEstimatePDF('${e.id}')">Save & PDF</button>
+              <button type="button" class="btn warn" onclick="acceptEstimateToProject('${e.id}')">Accept → Project</button>
+              <button type="button" class="btn danger" onclick="deleteEstimate('${e.id}');closeModal();">Delete</button>
+            </div>
+          </form>
+        `;
+      }
+      function materialLine(eid,m){
+        return `<div class="est-mat-grid" style="align-items:center;margin-bottom:.35rem;">
+          <input value="${escapeAttr(m.name)}" onchange="editEstMat('${eid}','${m.id}','name',this.value)">
+          <input type="number" step=".01" value="${m.qty}" onchange="editEstMat('${eid}','${m.id}','qty',this.value)">
+          <input type="number" step=".01" value="${m.unitCost}" onchange="editEstMat('${eid}','${m.id}','unitCost',this.value)">
+          <button type="button" class="btn small danger" onclick="deleteEstMat('${eid}','${m.id}')">✕</button>
+        </div>`;
+      }
+      window.addEstimateMaterial=function(eid){
+        const e=state.estimates.find(x=>x.id===eid);
+        const name=document.getElementById('newMatName').value.trim();
+        const qty=Number(document.getElementById('newMatQty').value);
+        const cost=Number(document.getElementById('newMatCost').value);
+        if(!name||!qty||!cost)return;
+        e.materials.push({id:genId(), name, qty, unitCost:cost});
+        e.updated=iso();
+        saveState();
+        openEstimateModalById(eid);
+      };
+      window.editEstMat=function(eid,mid,key,val){
+        const e=state.estimates.find(x=>x.id===eid);
+        const m=e.materials.find(m=>m.id===mid);
+        if(['qty','unitCost'].includes(key)) m[key]=Number(val)||0; else m[key]=val;
+        e.updated=iso(); saveState(); updateEstimateCalc(eid);
+      };
+      window.deleteEstMat=function(eid,mid){
+        const e=state.estimates.find(x=>x.id===eid);
+        e.materials=e.materials.filter(m=>m.id!==mid);
+        e.updated=iso(); saveState(); openEstimateModalById(eid);
+      };
+      window.saveEstimateMeta=function(ev,id){
+        ev.preventDefault();
+        const e=state.estimates.find(x=>x.id===id);
+        const fd=new FormData(ev.target);
+        Object.assign(e,Object.fromEntries(fd.entries()));
+        ['crewSize','hoursPerDay','days','laborRate','overheadPct','markupPct'].forEach(k=> e[k]=Number(e[k])||0);
+        e.updated=iso();
+        saveState();updateEstimateCalc(id);renderEstimates();logActivity('Updated estimate '+e.title);
+        alert('Estimate saved.');
+      };
+      function updateEstimateCalc(id){
+        const e=state.estimates.find(x=>x.id===id);
+        if(!e) return;
+        const f=estimateFinancials(e);
+        const div=document.getElementById('estimateTotals');
+        if(div){
+          div.innerHTML = `
+            Material: ${money(f.material)}<br>
+            Labor: ${money(f.labor)}<br>
+            Overhead: ${money(f.overhead)}<br>
+            Subtotal: ${money(f.subtotal)}<br>
+            Price: <strong>${money(f.price)}</strong><br>
+            Profit: ${money(f.profit)}<br>
+            Margin: ${f.margin.toFixed(1)}%
+          `;
+        }
+      }
+      window.deleteEstimate=function(id){
+        if(!confirm('Delete estimate?')) return;
+        state.estimates=state.estimates.filter(e=>e.id!==id);
+        saveState();renderEstimates();logActivity('Deleted estimate');
+      };
+      window.acceptEstimateToProject=function(id){
+        const e=state.estimates.find(x=>x.id===id);
+        if(!e) return;
+        if(!confirm('Convert accepted estimate to Project?')) return;
+        e.status='Accepted';
+        // create customer if linked lead has contact
+        let custId=null;
+        if(e.leadId){
+          const l=state.leads.find(l=>l.id===e.leadId);
+          if(l){
+            let cust=state.customers.find(c=> c.name===l.name && c.phone===l.phone);
+            if(!cust){
+              cust={id:genId(), name:l.name, phone:l.phone, email:l.email, city:l.city, notes:'From Lead/Estimate', created:iso(), projects:[]};
+              state.customers.push(cust);
+            }
+            custId=cust.id;
+            if(l.status!=='Won') l.status='Won';
+          }
+        }
+        const proj={
+          id:genId(),
+          name:e.title,
+          customerId:custId,
+          type:'Deck',
+          status:'Approved',
+          description:'From accepted estimate',
+          tasks:[],
+          materials:e.materials.map(m=>({...m})),
+          laborHours: (e.crewSize||1)*(e.hoursPerDay||0)*(e.days||0),
+          overheadPct:e.overheadPct, markupPct:e.markupPct,
+          notes:'',
+          created:iso(), updated:iso()
+        };
+        state.projects.push(proj);
+        if(custId){
+          const cust=state.customers.find(c=>c.id===custId);
+          cust.projects.push(proj.id);
+        }
+        e.projectId=proj.id;
+        saveState();
+        renderEstimates();renderProjects();renderLeads();renderDashboard();
+        logActivity('Estimate converted to project: '+proj.name);
+        alert('Project created from estimate.');
+      };
+
+      // PDF for selected estimate (via export menu)
+      function exportEstimatePDF(){
+        if(!selectedEstimateId){alert('Open an estimate first.');return;}
+        downloadEstimatePDF(selectedEstimateId);
+      }
+      window.downloadEstimatePDF=function(id){
+        const e=state.estimates.find(x=>x.id===id);
+        if(!e){alert('Estimate not found');return;}
+        if(!(window.jspdf && window.jspdf.jsPDF)){
+          alert('jsPDF not loaded. Check internet connection.');
+          return;
+        }
+        const f=estimateFinancials(e);
+        const doc=new window.jspdf.jsPDF();
+        doc.setFontSize(14);
+        doc.text(e.title,10,12);
+        doc.setFontSize(10);
+        let y=20;
+        function line(t){doc.text(t,10,y);y+=6;}
+        line('Date: '+new Date().toLocaleDateString());
+        if(e.leadId) line('Lead: '+(findLeadName(e.leadId)||''));
+        if(e.projectId) line('Project: '+(findProjectName(e.projectId)||''));
+        y+=2;
+        line('MATERIALS:');
+        e.materials.forEach(m=>{
+          line(`- ${m.name}  ${m.qty} @ ${money(m.unitCost)} = ${money(m.qty*m.unitCost)}`);
+        });
+        y+=2;
+        line('Crew: '+e.crewSize+' | Hours/Day: '+e.hoursPerDay+' | Days: '+e.days+' | Labor Rate: '+money(e.laborRate));
+        y+=2;
+        line('Material: '+money(f.material));
+        line('Labor: '+money(f.labor));
+        line('Overhead ('+e.overheadPct+'%): '+money(f.overhead));
+        line('Subtotal: '+money(f.subtotal));
+        line('Markup '+e.markupPct+'% Price: '+money(f.price));
+        line('Profit: '+money(f.profit)+'  Margin: '+f.margin.toFixed(1)+'%');
+        y+=8;
+        const notes = (e.notes||'').split(/\r?\n/);
+        if(notes.length){
+          line('Notes:');
+          notes.forEach(n=>{
+            doc.text(n,14,y); y+=5;
+            if(y>270){doc.addPage(); y=15;}
+          });
+        }
+        doc.save(e.title.replace(/\s+/g,'_')+'_estimate.pdf');
+        logActivity('Exported estimate PDF '+e.title);
+      };
+
+      // ======================== CUSTOMERS ========================
+      function renderCustomers(){
+        const term=document.getElementById('customerSearch').value.toLowerCase().trim();
+        const sort=document.getElementById('customerSort').value;
+        let list=[...state.customers];
+        if(term){
+          list=list.filter(c=> (c.name||'').toLowerCase().includes(term)||
+            (c.city||'').toLowerCase().includes(term)||
+            (c.email||'').toLowerCase().includes(term)||
+            (c.phone||'').toLowerCase().includes(term));
+        }
+        if(sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name));
+        if(sort==='projects') list.sort((a,b)=> (b.projects?.length||0)-(a.projects?.length||0));
+        if(sort==='recent') list.sort((a,b)=> new Date(b.created)-new Date(a.created));
+        document.querySelector('#customerTable tbody').innerHTML=list.map(c=>{
+          return `<tr>
+            <td><strong>${escapeHTML(c.name)}</strong></td>
+            <td>${escapeHTML(c.phone||'')}<br><span class="muted">${escapeHTML(c.email||'')}</span></td>
+            <td>${c.projects?.length||0}</td>
+            <td>${escapeHTML(c.city||'')}</td>
+            <td>${escapeHTML(c.notes||'')}</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="editCustomer('${c.id}')">Edit</button>
+                <button class="btn small danger" onclick="deleteCustomer('${c.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        document.getElementById('customerCount').textContent=list.length+' / '+state.customers.length+' customers';
+      }
+      function customerForm(c={}){
+        return `
+          <form onsubmit="saveCustomer(event,'${c.id||''}')">
+            <div class="two-col">
+              <div><label>Name</label><input name="name" required value="${escapeAttr(c.name||'')}"></div>
+              <div><label>Phone</label><input name="phone" value="${escapeAttr(c.phone||'')}"></div>
+              <div><label>Email</label><input type="email" name="email" value="${escapeAttr(c.email||'')}"></div>
+              <div><label>City</label><input name="city" value="${escapeAttr(c.city||'')}"></div>
+            </div>
+            <label>Notes</label>
+            <textarea name="notes">${escapeHTML(c.notes||'')}</textarea>
+            <div style="margin-top:.7rem;"><button class="btn">Save Customer</button></div>
+          </form>
+        `;
+      }
+      function addCustomerModal(){openModal('New Customer', customerForm());}
+      function editCustomer(id){const c=state.customers.find(x=>x.id===id); openModal('Edit Customer', customerForm(c));}
+      window.saveCustomer=function(e,id){
+        e.preventDefault();
+        const obj=Object.fromEntries(new FormData(e.target).entries());
+        if(id){
+          Object.assign(state.customers.find(c=>c.id===id),obj);
+          logActivity('Updated customer '+obj.name);
+        } else {
+          state.customers.push({id:genId(), created:iso(), projects:[], ...obj});
+          logActivity('Created customer '+obj.name);
+        }
+        saveState();closeModal();renderCustomers();
+      };
+      window.deleteCustomer=function(id){
+        if(!confirm('Delete customer?')) return;
+        state.customers=state.customers.filter(c=>c.id!==id);
+        state.projects.forEach(p=>{if(p.customerId===id) p.customerId=null;});
+        saveState();renderCustomers();logActivity('Deleted customer');
+      };
+
+      // ======================== PROJECTS ========================
+      function projectProgress(p){
+        if(!p.tasks||!p.tasks.length) return 0;
+        const done=p.tasks.filter(t=>t.done).length;
+        return (done/p.tasks.length)*100;
+      }
+      function projectFinancials(p){
+        const materialCost=p.materials.reduce((a,b)=>a+(b.qty*b.unitCost),0);
+        const laborCost=(p.laborHours||0)*(state.settings.laborRate||0);
+        const overheadValue=(materialCost+laborCost)*((p.overheadPct||0)/100);
+        const baseCost=materialCost+laborCost+overheadValue;
+        const price=baseCost*(1+(p.markupPct||0)/100);
+        const profit=price-baseCost;
+        const marginPct=price? (profit/price)*100:0;
+        return {materialCost,laborCost,overheadValue,baseCost,price,profit,marginPct};
+      }
+      function statusBadge(status){
+        const colors={
+          Lead:'#3a4450',Estimate:'#433d24',Approved:'#244334',
+          'In Progress':'#1f3d5c',Completed:'#324234'
+        };
+        return `<span class="tag" style="background:${colors[status]||'#2b3744'};">${status}</span>`;
+      }
+      function renderProjects(){
+        const term=document.getElementById('projectSearch').value.toLowerCase().trim();
+        const type=document.getElementById('projectFilterType').value;
+        const stat=document.getElementById('projectFilterStatus').value;
+        let list=[...state.projects];
+        if(term){
+          list=list.filter(p=>
+            p.name.toLowerCase().includes(term)||
+            (findCustomerName(p.customerId)||'').toLowerCase().includes(term)||
+            (p.type||'').toLowerCase().includes(term)||
+            (p.status||'').toLowerCase().includes(term)
+          );
+        }
+        if(type) list=list.filter(p=>p.type===type);
+        if(stat) list=list.filter(p=>p.status===stat);
+        list.sort((a,b)=> new Date(b.created)-new Date(a.created));
+        document.querySelector('#projectTable tbody').innerHTML = list.map(p=>{
+          const prog=projectProgress(p);
+          const {baseCost, price, marginPct}=projectFinancials(p);
+          return `<tr>
+            <td><strong>${escapeHTML(p.name)}</strong></td>
+            <td><span class="tag type-${p.type.toLowerCase()}">${p.type}</span></td>
+            <td>${escapeHTML(findCustomerName(p.customerId)||'—')}</td>
+            <td>${statusBadge(p.status)}</td>
+            <td>
+              <div class="progress-bar"><span style="width:${prog}%"></span></div>
+              <span class="muted">${prog.toFixed(0)}%</span>
+            </td>
+            <td><span class="muted">Est:</span> ${money(price)}<br><span class="muted">Cost:</span> ${money(baseCost)}</td>
+            <td>${marginPct.toFixed(1)}%</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="editProject('${p.id}')">View</button>
+                <button class="btn small danger" onclick="deleteProject('${p.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        document.getElementById('projectCount').textContent=list.length+' / '+state.projects.length+' projects';
+      }
+      function projectForm(p={}){
+        return `
+          <form onsubmit="saveProject(event,'${p.id||''}')">
+            <label>Project Name</label>
+            <input name="name" required value="${escapeAttr(p.name||'')}">
+            <div class="two-col">
+              <div>
+                <label>Customer</label>
+                <select name="customerId">
+                  <option value="">— None —</option>
+                  ${state.customers.map(c=> `<option value="${c.id}" ${c.id===p.customerId?'selected':''}>${escapeHTML(c.name)}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Type</label>
+                <select name="type">
+                  ${['Deck','Remodel','Handyman'].map(t=> `<option ${t===(p.type||'Deck')?'selected':''}>${t}</option>`).join('')}
+                </select>
+              </div>
+              <div>
+                <label>Status</label>
+                <select name="status">
+                  ${['Lead','Estimate','Approved','In Progress','Completed'].map(s=> `<option ${s===(p.status||'Lead')?'selected':''}>${s}</option>`)}
+                </select>
+              </div>
+              <div>
+                <label>Labor Hours</label>
+                <input name="laborHours" type="number" step="1" value="${p.laborHours||0}">
+              </div>
+              <div>
+                <label>Overhead %</label>
+                <input name="overheadPct" type="number" step=".1" value="${p.overheadPct||state.settings.overheadPct}">
+              </div>
+              <div>
+                <label>Markup %</label>
+                <input name="markupPct" type="number" step=".1" value="${p.markupPct||state.settings.markupPct}">
+              </div>
+            </div>
+            <label>Description</label>
+            <textarea name="description">${escapeHTML(p.description||'')}</textarea>
+            <label>Notes</label>
+            <textarea name="notes">${escapeHTML(p.notes||'')}</textarea>
+            <div style="margin-top:.75rem;">
+              <button class="btn">Save Project</button>
+            </div>
+          </form>
+        `;
+      }
+      function projectDetail(p){
+        const prog=projectProgress(p);
+        const f=projectFinancials(p);
+        return `
+          <div class="two-col">
+            <div>
+              <p><strong>${escapeHTML(p.name)}</strong><br><span class="muted">${escapeHTML(findCustomerName(p.customerId)||'No Customer')}</span></p>
+              <p><span class="tag type-${p.type.toLowerCase()}">${p.type}</span> ${statusBadge(p.status)}</p>
+              <div class="progress-bar" style="margin:.5rem 0;"><span style="width:${prog}%"></span></div>
+              <p class="muted">${prog.toFixed(1)}% Complete</p>
+              <p style="font-size:.65rem;line-height:1.35;">${escapeHTML(p.description||'No description')}</p>
+              <button class="btn small outline" onclick="openModal('Edit Project', projectForm(state.projects.find(x=>x.id==='${p.id}')))">Edit Info</button>
+            </div>
+            <div>
+              <h4>Financials</h4>
+              <div class="formula">
+                Material: ${money(f.materialCost)}<br>
+                Labor: ${money(f.laborCost)}<br>
+                Overhead: ${money(f.overheadValue)}<br>
+                Base Cost: ${money(f.baseCost)}<br>
+                Price: ${money(f.price)}<br>
+                Profit: ${money(f.profit)}<br>
+                Margin: ${f.marginPct.toFixed(1)}%
+              </div>
+              <button class="btn small" onclick="adjustProjectFinancials('${p.id}')">Adjust %</button>
+            </div>
+          </div>
+          <hr style="margin:1rem 0;border:none;border-top:1px solid #2a3440;">
+          <div class="two-col">
+            <div>
+              <h4>Tasks</h4>
+              <div id="taskList">${p.tasks.map(t=>taskRow(p.id,t)).join('')}</div>
+              <div style="margin-top:.45rem;">
+                <input id="newTaskName" placeholder="New task name">
+                <button class="btn small" onclick="addTask('${p.id}')">Add Task</button>
+              </div>
+            </div>
+            <div>
+              <h4>Materials</h4>
+              <div id="materialList">${p.materials.map(m=>materialRow(p.id,m)).join('')}</div>
+              <div style="margin-top:.45rem;display:grid;grid-template-columns:2fr .8fr .9fr auto;gap:.4rem;">
+                <input id="matName" placeholder="Name">
+                <input id="matQty" type="number" placeholder="Qty">
+                <input id="matCost" type="number" step=".01" placeholder="Unit Cost">
+                <button class="btn small" onclick="addMaterial('${p.id}')">Add</button>
+              </div>
+            </div>
+          </div>
+          <hr style="margin:1rem 0;border:none;border-top:1px solid #2a3440;">
+          <h4>Notes</h4>
+          <textarea id="projectNotes" style="min-height:70px;">${escapeHTML(p.notes||'')}</textarea>
+          <div style="margin-top:.5rem;"><button class="btn small" onclick="saveProjectNotes('${p.id}')">Save Notes</button></div>
+        `;
+      }
+      function taskRow(pid,t){
+        return `<div class="pill ${t.done?'done':''}">
+          <input type="checkbox" onchange="toggleTask('${pid}','${t.id}',this.checked)" ${t.done?'checked':''}>
+          <span>${escapeHTML(t.name)}</span>
+          <button onclick="deleteTask('${pid}','${t.id}')">×</button>
+        </div>`;
+      }
+      function materialRow(pid,m){
+        return `<div class="pill" style="background:#2a3642;">
+          <span>${escapeHTML(m.name)} (${m.qty} @ ${money(m.unitCost)})</span>
+          <button onclick="deleteMaterial('${pid}','${m.id}')">×</button>
+        </div>`;
+      }
+      function addProjectModal(){openModal('New Project', projectForm());}
+      function editProject(id){
+        const p=state.projects.find(p=>p.id===id);
+        openModal('Project Detail', projectDetail(p));
+      }
+      function adjustProjectFinancials(id){
+        const p=state.projects.find(x=>x.id===id);
+        const mark=prompt('Markup %', p.markupPct);
+        if(mark===null) return;
+        const over=prompt('Overhead %', p.overheadPct);
+        if(over===null) return;
+        p.markupPct=Number(mark)||p.markupPct;
+        p.overheadPct=Number(over)||p.overheadPct;
+        p.updated=iso();
+        saveState();editProject(id);renderProjects();
+      }
+      window.saveProject=function(e,id){
+        e.preventDefault();
+        const obj=Object.fromEntries(new FormData(e.target).entries());
+        obj.laborHours=Number(obj.laborHours)||0;
+        obj.overheadPct=Number(obj.overheadPct)||0;
+        obj.markupPct=Number(obj.markupPct)||0;
+        if(id){
+          const p=state.projects.find(p=>p.id===id);
+          Object.assign(p,obj);
+          p.updated=iso();
+          logActivity('Updated project '+p.name);
+        } else {
+          const p={id:genId(), tasks:[], materials:[], created:iso(), updated:iso(), ...obj};
+          state.projects.push(p);
+          logActivity('Created project '+p.name);
+          // link to customer
+          const c=state.customers.find(c=>c.id===p.customerId);
+          if(c && !c.projects.includes(p.id)) c.projects.push(p.id);
+        }
+        saveState();closeModal();renderProjects();
+      };
+      window.deleteProject=function(id){
+        if(!confirm('Delete project?')) return;
+        state.projects=state.projects.filter(p=>p.id!==id);
+        state.customers.forEach(c=> c.projects = (c.projects||[]).filter(pid=>pid!==id));
+        saveState();renderProjects();logActivity('Deleted project');
+      };
+      window.addTask=function(pid){
+        const p=state.projects.find(p=>p.id===pid);
+        const name=document.getElementById('newTaskName').value.trim();
+        if(!name) return;
+        p.tasks.push({id:genId(), name, done:false});
+        p.updated=iso(); saveState(); editProject(pid); renderProjects();
+      };
+      window.toggleTask=function(pid,tid,done){
+        const p=state.projects.find(p=>p.id===pid);
+        const t=p.tasks.find(t=>t.id===tid); t.done=done;
+        p.updated=iso(); saveState(); editProject(pid); renderProjects();
+      };
+      window.deleteTask=function(pid,tid){
+        const p=state.projects.find(p=>p.id===pid);
+        p.tasks=p.tasks.filter(t=>t.id!==tid);
+        p.updated=iso(); saveState(); editProject(pid); renderProjects();
+      };
+      window.addMaterial=function(pid){
+        const p=state.projects.find(p=>p.id===pid);
+        const name=document.getElementById('matName').value.trim();
+        const qty=Number(document.getElementById('matQty').value);
+        const unitCost=Number(document.getElementById('matCost').value);
+        if(!name||!qty||!unitCost) return;
+        p.materials.push({id:genId(), name, qty, unitCost});
+        p.updated=iso(); saveState(); editProject(pid); renderProjects();
+      };
+      window.deleteMaterial=function(pid,mid){
+        const p=state.projects.find(p=>p.id===pid);
+        p.materials=p.materials.filter(m=>m.id!==mid);
+        p.updated=iso(); saveState(); editProject(pid); renderProjects();
+      };
+      window.saveProjectNotes=function(pid){
+        const p=state.projects.find(p=>p.id===pid);
+        p.notes=document.getElementById('projectNotes').value;
+        p.updated=iso(); saveState(); logActivity('Updated project notes');
+      };
+
+      // ======================== FINANCIAL ========================
+      function renderInvoices(){
+        const filter=document.getElementById('invoiceFilterStatus').value;
+        let list=[...state.invoices];
+        if(filter) list=list.filter(i=>i.status===filter);
+        list.sort((a,b)=> new Date(b.date)-new Date(a.date));
+        document.querySelector('#invoiceTable tbody').innerHTML = list.map(inv=>{
+          return `<tr>
+            <td>${escapeHTML(inv.number)}</td>
+            <td>${escapeHTML(findProjectName(inv.projectId)||'—')}</td>
+            <td>${escapeHTML(findCustomerName(inv.customerId)||'—')}</td>
+            <td>${inv.date}</td>
+            <td>${money(inv.total||0)}</td>
+            <td>${statusBadge(inv.status)}</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="editInvoice('${inv.id}')">Edit</button>
+                <button class="btn small danger" onclick="deleteInvoice('${inv.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        const sums={Draft:0,Sent:0,Paid:0,Overdue:0};
+        state.invoices.forEach(i=> sums[i.status]=(sums[i.status]||0)+ (i.total||0));
+        document.getElementById('invoiceSummary').textContent =
+          Object.entries(sums).map(([k,v])=> `${k}: ${money(v)}`).join(' • ');
+      }
+      function invoiceForm(inv={}){
+        return `
+          <form onsubmit="saveInvoice(event,'${inv.id||''}')">
+            <div class="two-col">
+              <div><label>Invoice #</label><input name="number" required value="${escapeAttr(inv.number||('INV-'+Date.now().toString().slice(-6)))}"></div>
+              <div><label>Date</label><input type="date" name="date" required value="${inv.date||today()}"></div>
+              <div><label>Status</label><select name="status">
+                ${['Draft','Sent','Paid','Overdue'].map(s=> `<option ${s===(inv.status||'Draft')?'selected':''}>${s}</option>`).join('')}
+              </select></div>
+              <div><label>Project</label><select name="projectId">
+                <option value="">— None —</option>
+                ${state.projects.map(p=> `<option value="${p.id}" ${p.id===inv.projectId?'selected':''}>${escapeHTML(p.name)}</option>`).join('')}
+              </select></div>
+              <div><label>Customer</label><select name="customerId">
+                <option value="">— None —</option>
+                ${state.customers.map(c=> `<option value="${c.id}" ${c.id===inv.customerId?'selected':''}>${escapeHTML(c.name)}</option>`).join('')}
+              </select></div>
+              <div><label>Total ($)</label><input type="number" step=".01" name="total" value="${inv.total||0}"></div>
+            </div>
+            <label>Notes</label>
+            <textarea name="notes">${escapeHTML(inv.notes||'')}</textarea>
+            <div style="margin-top:.75rem;"><button class="btn">Save Invoice</button></div>
+          </form>
+        `;
+      }
+      function addInvoiceModal(){openModal('New Invoice', invoiceForm());}
+      function editInvoice(id){const inv=state.invoices.find(i=>i.id===id); openModal('Edit Invoice', invoiceForm(inv));}
+      window.saveInvoice=function(e,id){
+        e.preventDefault();
+        const data=Object.fromEntries(new FormData(e.target).entries());
+        data.total=Number(data.total)||0;
+        if(id){
+          Object.assign(state.invoices.find(i=>i.id===id),data);
+          logActivity('Updated invoice '+data.number);
+        } else {
+          state.invoices.push({id:genId(), ...data});
+          logActivity('Created invoice '+data.number);
+        }
+        saveState();closeModal();renderInvoices();renderDashboard();
+      };
+      window.deleteInvoice=function(id){
+        if(!confirm('Delete invoice?')) return;
+        state.invoices=state.invoices.filter(i=>i.id!==id);
+        saveState();renderInvoices();logActivity('Deleted invoice');
+      };
+
+      function renderExpenses(){
+        const cat=document.getElementById('expenseFilterCat').value;
+        let exps=[...state.expenses];
+        if(cat) exps=exps.filter(e=>e.category===cat);
+        exps.sort((a,b)=> new Date(b.date)-new Date(a.date));
+        document.querySelector('#expenseTable tbody').innerHTML = exps.map(e=>{
+          return `<tr>
+            <td>${e.date}</td>
+            <td>${escapeHTML(e.category)}</td>
+            <td>${escapeHTML(e.description)}</td>
+            <td>${escapeHTML(findProjectName(e.projectId)||'—')}</td>
+            <td>${money(e.amount)}</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="editExpense('${e.id}')">Edit</button>
+                <button class="btn small danger" onclick="deleteExpense('${e.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        const total=exps.reduce((a,b)=>a+b.amount,0);
+        document.getElementById('expenseSummary').textContent='Total: '+money(total);
+      }
+      function expenseForm(e={}){
+        return `
+          <form onsubmit="saveExpense(event,'${e.id||''}')">
+            <div class="two-col">
+              <div><label>Date</label><input type="date" name="date" required value="${e.date||today()}"></div>
+              <div><label>Category</label><select name="category">
+                ${['Materials','Labor','Tools','Permits','Marketing','General'].map(c=> `<option ${c===(e.category||'Materials')?'selected':''}>${c}</option>`).join('')}
+              </select></div>
+              <div><label>Project</label><select name="projectId">
+                <option value="">— None —</option>
+                ${state.projects.map(p=> `<option value="${p.id}" ${p.id===e.projectId?'selected':''}>${escapeHTML(p.name)}</option>`).join('')}
+              </select></div>
+              <div><label>Amount ($)</label><input name="amount" type="number" step=".01" required value="${e.amount||0}"></div>
+            </div>
+            <label>Description</label>
+            <input name="description" value="${escapeAttr(e.description||'')}">
+            <div style="margin-top:.75rem;"><button class="btn">Save Expense</button></div>
+          </form>
+        `;
+      }
+      function addExpenseModal(){openModal('New Expense', expenseForm());}
+      function editExpense(id){const exp=state.expenses.find(e=>e.id===id); openModal('Edit Expense', expenseForm(exp));}
+      window.saveExpense=function(e,id){
+        e.preventDefault();
+        const obj=Object.fromEntries(new FormData(e.target).entries());
+        obj.amount=Number(obj.amount)||0;
+        if(id){
+          Object.assign(state.expenses.find(x=>x.id===id),obj);
+          logActivity('Updated expense');
+        } else {
+          state.expenses.push({id:genId(), ...obj});
+          logActivity('Added expense');
+        }
+        saveState();closeModal();renderExpenses();renderDashboard();
+      };
+      window.deleteExpense=function(id){
+        if(!confirm('Delete expense?')) return;
+        state.expenses=state.expenses.filter(e=>e.id!==id);
+        saveState();renderExpenses();logActivity('Deleted expense');
+      };
+
+      // Cash flow
+      function renderCashFlow(){
+        const months=[];
+        const now=new Date();
+        for(let i=5;i>=0;i--){
+          const d=new Date(now.getFullYear(), now.getMonth()-i,1);
+          months.push(d.toISOString().slice(0,7));
+        }
+        const inflow=months.map(m=>
+          state.invoices.filter(i=>i.status==='Paid' && i.date.startsWith(m)).reduce((a,b)=>a+(b.total||0),0)
+        );
+        const outflow=months.map(m=>
+          state.expenses.filter(e=>e.date.startsWith(m)).reduce((a,b)=>a+(b.amount||0),0)
+        );
+        drawDualBarChart('cashChart', months.map(m=>m.slice(5)), inflow, outflow, {colors:['#1e90ff','#d9534f']});
+      }
+
+      // ======================== INVENTORY ========================
+      function renderInventory(){
+        const term=document.getElementById('inventorySearch').value.toLowerCase().trim();
+        const type=document.getElementById('inventoryFilterType').value;
+        let list=[...state.inventory];
+        if(term) list=list.filter(i=> i.name.toLowerCase().includes(term) || (i.supplier||'').toLowerCase().includes(term));
+        if(type) list=list.filter(i=>i.type===type);
+        list.sort((a,b)=>a.name.localeCompare(b.name));
+        document.querySelector('#inventoryTable tbody').innerHTML = list.map(i=>{
+          return `<tr>
+            <td>${escapeHTML(i.name)}</td>
+            <td>${escapeHTML(i.type)}</td>
+            <td>${i.stock}</td>
+            <td>${money(i.unitCost)}</td>
+            <td>${i.reorderPoint}</td>
+            <td>${i.leadTimeDays}</td>
+            <td>${i.dailyUse}</td>
+            <td>${escapeHTML(i.supplier||'—')}</td>
+            <td>
+              <div class="btn-row">
+                <button class="btn small alt" onclick="editInventory('${i.id}')">Edit</button>
+                <button class="btn small danger" onclick="deleteInventory('${i.id}')">✕</button>
+              </div>
+            </td>
+          </tr>`;
+        }).join('');
+        const totalValue=list.reduce((a,b)=>a+(b.stock*b.unitCost),0);
+        document.getElementById('inventoryTotals').textContent = list.length+' items | Total Value: '+money(totalValue);
+        renderInventoryAlerts();
+      }
+      function renderInventoryAlerts(){
+        const alerts=state.inventory.filter(i=> i.stock<=i.reorderPoint);
+        const container=document.getElementById('inventoryAlerts');
+        if(!alerts.length){container.innerHTML='<div class="success-box">No Reorder Alerts</div>';return;}
+        container.innerHTML=alerts.map(a=> `<div class="danger-box">
+          <strong>${escapeHTML(a.name)}</strong><br>Stock: ${a.stock} / Reorder: ${a.reorderPoint}
+        </div>`).join('');
+      }
+      function inventoryForm(i={}){
+        return `
+          <form onsubmit="saveInventory(event,'${i.id||''}')">
+            <div class="two-col">
+              <div><label>Name</label><input name="name" required value="${escapeAttr(i.name||'')}"></div>
+              <div><label>Type</label><select name="type">
+                ${['Material','Tool','Supply'].map(t=> `<option ${t===(i.type||'Material')?'selected':''}>${t}</option>`)}
+              </select></div>
+              <div><label>Stock</label><input name="stock" type="number" value="${i.stock||0}"></div>
+              <div><label>Unit Cost</label><input name="unitCost" type="number" step=".01" value="${i.unitCost||0}"></div>
+              <div><label>Reorder Pt</label><input name="reorderPoint" type="number" value="${i.reorderPoint||0}"></div>
+              <div><label>Lead Time (d)</label><input name="leadTimeDays" type="number" value="${i.leadTimeDays||0}"></div>
+              <div><label>Daily Use</label><input name="dailyUse" type="number" step=".01" value="${i.dailyUse||0}"></div>
+              <div><label>Safety Stock</label><input name="safetyStock" type="number" step=".01" value="${i.safetyStock||0}"></div>
+            </div>
+            <label>Supplier</label>
+            <input name="supplier" value="${escapeAttr(i.supplier||'')}">
+            <div style="margin-top:.75rem;"><button class="btn">Save Item</button></div>
+          </form>
+        `;
+      }
+      function addInventoryModal(){openModal('New Inventory Item', inventoryForm());}
+      function editInventory(id){const i=state.inventory.find(x=>x.id===id); openModal('Edit Inventory', inventoryForm(i));}
+      window.saveInventory=function(e,id){
+        e.preventDefault();
+        const obj=Object.fromEntries(new FormData(e.target).entries());
+        ['stock','unitCost','reorderPoint','leadTimeDays','dailyUse','safetyStock'].forEach(k=> obj[k]=Number(obj[k])||0);
+        if(id){Object.assign(state.inventory.find(i=>i.id===id),obj);logActivity('Updated inventory');}
+        else {state.inventory.push({id:genId(), ...obj});logActivity('Added inventory item');}
+        saveState();closeModal();renderInventory();
+      };
+      window.deleteInventory=function(id){
+        if(!confirm('Delete item?')) return;
+        state.inventory=state.inventory.filter(i=>i.id!==id);
+        saveState();renderInventory();logActivity('Deleted inventory item');
+      };
+
+      // ======================== SCHEDULE ========================
+      function renderSchedule(){
+        const view=document.getElementById('scheduleView').value;
+        let events=[...state.schedule];
+        events.sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+        const todayStr=today();
+        if(view==='today') events=events.filter(e=>e.date===todayStr);
+        else if(view==='week'){
+          const start=new Date();
+          const end=new Date(); end.setDate(end.getDate()+7);
+          events=events.filter(e=>{
+            const d=new Date(e.date);
+            return d>=start && d<=end;
+          });
+        }
+        document.getElementById('scheduleContainer').innerHTML = events.map(e=>{
+          return `<div class="panel" style="padding:.65rem .75rem;margin-bottom:.55rem;">
+            <strong>${escapeHTML(e.title)}</strong> <span class="muted">${e.date} ${e.time}</span><br>
+            <span class="tag">${escapeHTML(e.type)}</span>
+            <div style="margin-top:.25rem;font-size:.6rem;">${escapeHTML(e.notes||'')}</div>
+            <div class="btn-row" style="margin-top:.4rem;">
+              <button class="btn small alt" onclick="editEvent('${e.id}')">Edit</button>
+              <button class="btn small danger" onclick="deleteEvent('${e.id}')">✕</button>
+            </div>
+          </div>`;
+        }).join('') || '<div class="muted">No events</div>';
+      }
+      function eventForm(e={}){
+        return `
+          <form onsubmit="saveEvent(event,'${e.id||''}')">
+            <div class="two-col">
+              <div><label>Title</label><input name="title" required value="${escapeAttr(e.title||'')}"></div>
+              <div><label>Date</label><input type="date" name="date" required value="${e.date||today()}"></div>
+              <div><label>Time</label><input type="time" name="time" value="${e.time||'09:00'}"></div>
+              <div><label>Duration (min)</label><input type="number" name="duration" value="${e.duration||60}"></div>
+              <div><label>Type</label><select name="type">
+                ${['Site Visit','Project','Estimate','Meeting','Delivery','Other'].map(t=> `<option ${t===(e.type||'Project')?'selected':''}>${t}</option>`).join('')}
+              </select></div>
+            </div>
+            <label>Notes</label>
+            <textarea name="notes">${escapeHTML(e.notes||'')}</textarea>
+            <div style="margin-top:.75rem;"><button class="btn">Save Event</button></div>
+          </form>
+        `;
+      }
+      function addEventModal(){openModal('New Event', eventForm());}
+      function editEvent(id){const ev=state.schedule.find(s=>s.id===id); openModal('Edit Event', eventForm(ev));}
+      window.saveEvent=function(ev,id){
+        ev.preventDefault();
+        const obj=Object.fromEntries(new FormData(ev.target).entries());
+        obj.duration=Number(obj.duration)||60;
+        if(id){Object.assign(state.schedule.find(e=>e.id===id),obj);logActivity('Updated event '+obj.title);}
+        else {state.schedule.push({id:genId(), ...obj});logActivity('Added event '+obj.title);}
+        saveState();closeModal();renderSchedule();
+      };
+      window.deleteEvent=function(id){
+        if(!confirm('Delete event?')) return;
+        state.schedule=state.schedule.filter(e=>e.id!==id);
+        saveState();renderSchedule();logActivity('Deleted event');
+      };
+
+      // ======================== SETTINGS ========================
+      function populateSettings(){
+        document.getElementById('settingLaborRate').value=state.settings.laborRate;
+        document.getElementById('settingOverheadPct').value=state.settings.overheadPct;
+        document.getElementById('settingMarkupPct').value=state.settings.markupPct;
+      }
+      function saveSettings(){
+        state.settings.laborRate=Number(document.getElementById('settingLaborRate').value)||state.settings.laborRate;
+        state.settings.overheadPct=Number(document.getElementById('settingOverheadPct').value)||state.settings.overheadPct;
+        state.settings.markupPct=Number(document.getElementById('settingMarkupPct').value)||state.settings.markupPct;
+        saveState();logActivity('Updated settings');alert('Settings saved');
+      }
+      function updateSchemaView(){
+        const snapshot={
+          settings:state.settings,
+          counts:{
+            leads:state.leads.length,
+            estimates:state.estimates.length,
+            customers:state.customers.length,
+            projects:state.projects.length,
+            invoices:state.invoices.length,
+            expenses:state.expenses.length,
+            inventory:state.inventory.length,
+            schedule:state.schedule.length
+          }
+        };
+        const el=document.getElementById('schemaView');
+        if(el) el.textContent=JSON.stringify(snapshot,null,2);
+      }
+
+      // ======================== MODAL ========================
+      const modalRoot=document.getElementById('modalRoot');
+      function openModal(title,content){
+        modalRoot.innerHTML=`<button class="close-btn" onclick="closeModal()">×</button><h2>${escapeHTML(title)}</h2>${content}`;
+        modalRoot.showModal();
+      }
+      function closeModal(){modalRoot.close();}
+
+      // ======================== EXPORT / IMPORT ========================
+      function toggleExportMenu(){
+        document.getElementById('exportMenu').classList.toggle('open');
+      }
+      window.onclick=(e)=>{
+        if(!e.target.closest?.('.export-menu')) document.getElementById('exportMenu').classList.remove('open');
+      };
+      function exportJSON(){
+        const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download='delmar_system_export_'+Date.now()+'.json';
+        a.click();
+        logActivity('Exported JSON');
+      }
+      function exportTableCSV(tableId,filename){
+        const table=document.getElementById(tableId);
+        if(!table){alert('Table not found');return;}
+        let csv=[];
+        const rows=[...table.querySelectorAll('tr')];
+        rows.forEach(row=>{
+          const cols=[...row.children].map(td=>'"'+td.textContent.replace(/"/g,'""').trim()+'"');
+          csv.push(cols.join(','));
+        });
+        const blob=new Blob([csv.join('\n')],{type:'text/csv'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        a.download=filename;
+        a.click();
+        logActivity('Exported CSV '+filename);
+      }
+
+      document.getElementById('importFile').onchange=e=>{
+        const file=e.target.files[0];
+        if(!file) return;
+        const reader=new FileReader();
+        reader.onload=()=>{
+          try{
+            const data=JSON.parse(reader.result);
+            if(!data.meta || !data.settings) throw new Error('Invalid structure');
+            state=data;
+            saveState();
+            refreshAll();
+            alert('Import successful');
+            logActivity('Imported data');
+          }catch(err){
+            alert('Import failed: '+err.message);
+          }
+        };
+        reader.readAsText(file);
+      };
+
+      document.getElementById('resetDataBtn').onclick=()=>{
+        if(!confirm('This will ERASE all data. Continue?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        state=structuredClone(DEFAULT_DATA);
+        saveState();refreshAll();logActivity('System reset');
+      };
+
+      // ======================== QUICK ADD ========================
+      document.getElementById('quickAddBtn').onclick=()=>{
+        openModal('Quick Add', `
+          <div class="btn-row">
+            <button class="btn" onclick="closeModal();addLeadModal();">Lead</button>
+            <button class="btn" onclick="closeModal();openEstimateModal({title:'New Estimate'})">Estimate</button>
+            <button class="btn" onclick="closeModal();addCustomerModal();">Customer</button>
+            <button class="btn" onclick="closeModal();addProjectModal();">Project</button>
+            <button class="btn" onclick="closeModal();addInvoiceModal();">Invoice</button>
+            <button class="btn" onclick="closeModal();addExpenseModal();">Expense</button>
+            <button class="btn" onclick="closeModal();addInventoryModal();">Inventory</button>
+            <button class="btn" onclick="closeModal();addEventModal();">Event</button>
+          </div>
+        `);
+      };
+
+      // ======================== SMALL CHARTS ========================
+      function drawBarChart(id,labels,data,opts={}){
+        const el=document.getElementById(id);
+        if(!el) return;
+        const ctx=el.getContext('2d');
+        el.width=el.clientWidth; el.height=el.clientHeight;
+        ctx.clearRect(0,0,el.width,el.height);
+        const max=Math.max(...data,5);
+        const pad=24,w=(el.width-pad*2)/labels.length;
+        ctx.font='11px system-ui'; ctx.textAlign='center';
+        data.forEach((val,i)=>{
+          const h=(el.height-pad*2)*(val/max);
+            const x=pad+i*w;
+          const y=el.height-pad-h;
+          const grd=ctx.createLinearGradient(0,y,0,y+h);
+          grd.addColorStop(0, opts.colors||'#1e90ff');
+          grd.addColorStop(1, '#0a4c8c');
+          ctx.fillStyle=grd;
+          ctx.fillRect(x+w*.15,y,w*.7,h);
+          ctx.fillStyle='#9aa4b1';
+          ctx.fillText(val, x+w*.5, y-4);
+          ctx.save();
+          ctx.translate(x+w*.5, el.height-pad+12);
+          ctx.rotate(-Math.PI/4);
+          ctx.fillText(labels[i],0,0);
+          ctx.restore();
+        });
+      }
+      function drawDualBarChart(id, labels, d1, d2, opts={}){
+        const el=document.getElementById(id);
+        if(!el) return;
+        const ctx=el.getContext('2d');
+        el.width=el.clientWidth; el.height=el.clientHeight;
+        ctx.clearRect(0,0,el.width,el.height);
+        const max=Math.max(...d1,...d2,5);
+        const pad=28,w=(el.width-pad*2)/labels.length;
+        ctx.font='11px system-ui';
+        labels.forEach((lab,i)=>{
+          const v1=d1[i],v2=d2[i];
+          const h1=(el.height-pad*2)*(v1/max);
+          const h2=(el.height-pad*2)*(v2/max);
+          const x=pad+i*w;
+          const y=el.height-pad;
+          ctx.fillStyle=opts.colors[0]; ctx.fillRect(x+4,y-h1,(w/2)-8,h1);
+          ctx.fillStyle=opts.colors[1]; ctx.fillRect(x+w/2+4,y-h2,(w/2)-8,h2);
+          ctx.fillStyle='#9aa4b1'; ctx.textAlign='center';
+          ctx.fillText(lab,x+w/2,y+12);
+          ctx.textAlign='left';
+          ctx.fillText(v1,x+4,y-h1-4);
+          ctx.fillText(v2,x+w/2+4,y-h2-4);
+        });
+      }
+
+      // ======================== EVENT LISTENERS ========================
+      document.getElementById('leadSearch').oninput=renderLeads;
+      document.getElementById('leadFilterStatus').onchange=renderLeads;
+      document.getElementById('leadFilterType').onchange=renderLeads;
+      document.getElementById('addLeadBtn').onclick=addLeadModal;
+
+      document.getElementById('estimateSearch').oninput=renderEstimates;
+      document.getElementById('estimateFilterStatus').onchange=renderEstimates;
+      document.getElementById('addEstimateBtn').onclick=()=>openEstimateModal({title:'New Estimate'});
+
+      document.getElementById('customerSearch').oninput=renderCustomers;
+      document.getElementById('customerSort').onchange=renderCustomers;
+      document.getElementById('addCustomerBtn').onclick=addCustomerModal;
+
+      document.getElementById('projectSearch').oninput=renderProjects;
+      document.getElementById('projectFilterType').onchange=renderProjects;
+      document.getElementById('projectFilterStatus').onchange=renderProjects;
+      document.getElementById('addProjectBtn').onclick=addProjectModal;
+
+      document.getElementById('addInvoiceBtn').onclick=addInvoiceModal;
+      document.getElementById('invoiceFilterStatus').onchange=renderInvoices;
+      document.getElementById('addExpenseBtn').onclick=addExpenseModal;
+      document.getElementById('expenseFilterCat').onchange=renderExpenses;
+
+      document.getElementById('addInventoryBtn').onclick=addInventoryModal;
+      document.getElementById('inventorySearch').oninput=renderInventory;
+      document.getElementById('inventoryFilterType').onchange=renderInventory;
+
+      document.getElementById('addEventBtn').onclick=addEventModal;
+      document.getElementById('scheduleView').onchange=renderSchedule;
+
+      document.getElementById('saveSettingsBtn').onclick=saveSettings;
+
+      // ======================== INITIAL RENDER ========================
+      function refreshAll(){
+        renderDashboard();
+        renderLeads();
+        renderEstimates();
+        renderCustomers();
+        renderProjects();
+        renderInvoices();
+        renderExpenses();
+        renderCashFlow();
+        renderInventory();
+        renderSchedule();
+        populateSettings();
+        updateSchemaView();
+      }
+      refreshAll();
+      setTimeout(()=>{renderCashFlow();renderPipelineChart();},300);
+      document.getElementById('year').textContent=new Date().getFullYear();
+      setInterval(renderDashboard,15000);
+    </script>
+  </body>
+  </html>
